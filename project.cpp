@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <sstream>
 #include <map>
+#include <fstream>
 
 using namespace std;
 
@@ -237,6 +238,11 @@ public:
         }
 
         cout << "Profile updated successfully!\n";
+    }
+    
+    // Serialization
+    virtual string serialize() const {
+        return to_string(id) + "," + username + "," + password + "," + email + "," + role;
     }
 };
 
@@ -478,17 +484,72 @@ private:
     int nextCarId = 1;
     int nextBookingId = 1;
     int nextPaymentId = 1;
+    const string userDataFile = "users.dat";
 
     // Private constructor for singleton
     CarRentalSystem() {
-        // Initialize with some sample data
-        users.push_back(make_unique<Admin>(nextUserId++, "admin", "admin123", "admin@carrental.com"));
-        users.push_back(make_unique<Customer>(nextUserId++, "john", "john123", "john@example.com"));
-        users.push_back(make_unique<Customer>(nextUserId++, "alice", "alice123", "alice@example.com"));
+        loadUserData();
+        // Initialize with some sample data if no users exist
+        if (users.empty()) {
+            users.push_back(make_unique<Admin>(nextUserId++, "admin", "admin123", "admin@carrental.com"));
+            users.push_back(make_unique<Customer>(nextUserId++, "john", "john123", "john@example.com"));
+            users.push_back(make_unique<Customer>(nextUserId++, "alice", "alice123", "alice@example.com"));
+            saveUserData();
+        }
 
         cars.emplace_back(nextCarId++, "Toyota", "Sedan", 50.0);
         cars.emplace_back(nextCarId++, "Honda", "SUV", 70.0);
         cars.emplace_back(nextCarId++, "Ford", "Truck", 90.0);
+    }
+
+    void loadUserData() {
+        ifstream inFile(userDataFile);
+        if (!inFile) {
+            // File doesn't exist yet, that's okay
+            return;
+        }
+
+        string line;
+        while (getline(inFile, line)) {
+            istringstream iss(line);
+            string token;
+            vector<string> tokens;
+            
+            while (getline(iss, token, ',')) {
+                tokens.push_back(token);
+            }
+
+            if (tokens.size() != 5) continue; // Skip invalid lines
+
+            int id = stoi(tokens[0]);
+            string username = tokens[1];
+            string password = tokens[2];
+            string email = tokens[3];
+            string role = tokens[4];
+
+            if (role == "admin") {
+                users.push_back(make_unique<Admin>(id, username, password, email));
+            } else {
+                users.push_back(make_unique<Customer>(id, username, password, email));
+            }
+
+            // Update nextUserId to be higher than any existing ID
+            if (id >= nextUserId) {
+                nextUserId = id + 1;
+            }
+        }
+    }
+
+    void saveUserData() {
+        ofstream outFile(userDataFile);
+        if (!outFile) {
+            cerr << "Error: Could not open user data file for writing!" << endl;
+            return;
+        }
+
+        for (const auto& user : users) {
+            outFile << user->serialize() << endl;
+        }
     }
 
 public:
@@ -519,7 +580,9 @@ public:
                 throw runtime_error("Username already exists!");
             }
         }
+
         users.push_back(make_unique<Customer>(nextUserId++, username, password, email));
+        saveUserData(); // Save the updated user list to file
         cout << "Registration successful! You can now login.\n";
     }
 
