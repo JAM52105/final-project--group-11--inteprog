@@ -1,0 +1,24 @@
+
+=== TRANSACTION LOG ===
+Timestamp: 2025-05-21 23:37:15
+Customer Details:
+  Username: kael
+  Email: kael@gmail.com
+Car Details:
+  ID: 4
+  Brand: Chevrolet Silverado
+  Type: Truck
+  Registration: JKL012
+Booking Details:
+  Booking ID: 3030
+  Start Date: 2025-05-21
+  End Date: 2025-05-24
+  Duration: 3 days
+Payment Details:
+  Payment ID: 4372
+  Amount: $255.00
+  Method: Credit Card
+  Status: Completed
+  Transaction ID: 9394
+Revenue Generated: $255.00
+========================
