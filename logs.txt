@@ -1,0 +1,20 @@
+
+=== BOOKING UPDATE ===
+Timestamp: 2025-05-21 15:13:17
+Action: Approved
+Customer: lucid
+Booking Details:
+  Booking ID: 4944
+  Car: Chevrolet Silverado
+  Status: Approved
+========================
+
+=== BOOKING UPDATE ===
+Timestamp: 2025-05-21 15:23:38
+Action: Approved
+Customer: lucid
+Booking Details:
+  Booking ID: 5957
+  Car: Toyota Camry
+  Status: Approved
+========================
